@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محلك - تفاصيل العرض</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0F2C59;
+            --secondary: #D86438;
+            --bg-color: #EBF1F5;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            padding-bottom: 90px;
+        }
+
+        /* Top Bar Header */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .icon-circle {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Image Gallery Box */
+        .image-banner {
+            width: 100%;
+            height: 260px;
+            background: #d8e2ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .image-banner i {
+            color: #9cb1c9;
+        }
+
+        /* Product Details Card */
+        .details-container {
+            padding: 15px;
+            margin-top: -15px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 12px rgba(15, 44, 89, 0.06);
+            margin-bottom: 15px;
+        }
+
+        .price-badge {
+            display: inline-block;
+            background: #EAF2FF;
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 8px;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+
+        .meta-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .description-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .description-text {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        /* Reviews Section */
+        .reviews-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comment-box {
+            background: #F8FAFC;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .comment-user {
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 2px;
+        }
+
+        .comment-text {
+            color: #555;
+        }
+
+        /* Fixed Bottom Action Buttons */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 12px 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn-whatsapp {
+            flex: 2;
+            background-color: #25D366;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 3px 8px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-call {
+            flex: 1;
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="index.html" class="icon-circle"><i class="fa-solid fa-arrow-right"></i></a>
+        <a href="#" class="icon-circle"><i class="fa-regular fa-bookmark"></i></a>
+    </div>
+
+    <!-- Image Banner -->
+    <div class="image-banner">
+        <i class="fa-solid fa-mobile-screen fa-4x"></i>
+    </div>
+
+    <!-- Content -->
+    <div class="details-container">
+        
+        <!-- Info Card -->
+        <div class="info-card">
+            <span class="price-badge">1,200,000 ج.س</span>
+            <div class="title">سامسونج S23 ألترا (سعة 256 جيجا)</div>
+            
+            <div class="meta-info">
+                <span><i class="fa-solid fa-location-dot" style="color: var(--secondary);"></i> الخرطوم</span>
+                <span><i class="fa-solid fa-clock"></i> منذ 3 ساعات</span>
+                <span style="color: #ffa500;"><i class="fa-solid fa-star"></i> 4.9</span>
+            </div>
+
+            <div class="description-title">تفاصيل العرض والمواصفات:</div>
+            <div class="description-text">
+                هاتف سامسونج S23 ألترا بحالة الممتازة، الاستخدام خفيف جداً، مع الكرتونة وكامل ملحقاته الأصلية. يدعم شريحتين ورام 12 جيجا. التوصيل متوفر داخل الخرطوم وأمدرمان.
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="info-card">
+            <div class="reviews-title">
+                <span>كلام الزبائن 💬</span>
+                <span style="font-size: 12px; color: var(--secondary); font-weight: normal;">إضافة انطباع</span>
+            </div>
+
+            <div class="comment-box">
+                <div class="comment-user">أحمد مصطفى ⭐⭐⭐⭐⭐</div>
+                <div class="comment-text">تعامل ممتاز وسريع، والمنتج مطابق للمواصفات تماماً.</div>
+            </div>
+
+            <div class="comment-box">
+                <div class="comment-user">محمد علي ⭐⭐⭐⭐⭐</div>
+                <div class="comment-text">التوصيل وصل في نفس اليوم، شكراً ليكم.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="bottom-actions">
+        <a href="https://wa.me/" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp fa-lg"></i>
+            اطلب هسي عبر الواتساب
+        </a>
+        <a href="tel:0912345678" class="btn-call">
+            <i class="fa-solid fa-phone"></i>
+            اتصال
+        </a>
+    </div>
+
+</body>
+</html>
