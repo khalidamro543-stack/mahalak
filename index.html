@@ -18,28 +18,33 @@
         .search-input { width: 100%; padding: 10px 38px 10px 12px; border: none; border-radius: 10px; outline: none; font-size: 13px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
 
-        /* شريط الفئات العلوي تحت البحث */
         .categories-top { display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: 4px; }
         .cat-chip { background: rgba(255, 255, 255, 0.25); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; border: none; backdrop-filter: blur(4px); }
         .cat-chip.active { background: #fff; color: var(--secondary); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        
+        /* كارت العرض العادي */
         .product-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: 0 3px 8px rgba(15, 44, 89, 0.08); display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* كارت العرض الإعلاني بعرض الشاشة الكامل مثل فيسبوك */
+        .marketing-card { grid-column: span 2; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 5px; }
+        .marketing-header { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f0f0f0; }
+        .marketing-img { width: 100%; max-height: 320px; object-fit: cover; cursor: pointer; }
+
         .card-image-box { position: relative; width: 100%; height: 130px; background: #f7f9fa; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .card-image-box img { width: 100%; height: 100%; object-fit: cover; }
         .type-badge { position: absolute; top: 6px; right: 6px; background: rgba(15, 44, 89, 0.85); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .card-content { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
         .badge-price { align-self: flex-start; background: #EAF2FF; color: var(--primary); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; }
         .product-title { font-size: 13px; font-weight: bold; color: #111; }
-        .product-desc { font-size: 11px; color: #666; height: 28px; overflow: hidden; }
+        .product-desc { font-size: 11px; color: #666; }
         
         .actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 8px; margin-top: 4px; font-size: 12px; }
         .reaction-btn { border: none; background: #f0f2f5; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: #444; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         .comments-btn { border: none; background: transparent; color: var(--primary); cursor: pointer; font-size: 12px; font-weight: bold; }
+        .follow-btn { background: var(--secondary); color: #fff; border: none; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; width: 100%; }
 
-        .follow-btn { background: var(--secondary); color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; width: 100%; }
-
-        /* شريط التنقل السفلي */
         .bottom-fixed-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); border-radius: 16px 16px 0 0; z-index: 1000; padding: 10px 0 12px 0; }
         .main-nav { display: flex; justify-content: space-around; align-items: center; }
         .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 12px; gap: 4px; }
@@ -47,9 +52,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
         .modal.active { display: flex; }
-        .modal-content { background: #fff; width: 100%; max-height: 80vh; border-radius: 20px 20px 0 0; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .img-viewer-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; padding: 15px; }
-        .img-viewer-modal img { max-width: 100%; max-height: 80vh; border-radius: 10px; }
+        .modal-content { background: #fff; width: 100%; max-height: 85vh; border-radius: 20px 20px 0 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
     </style>
 </head>
 <body>
@@ -60,10 +63,9 @@
         
         <div class="search-wrapper">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="search-input" class="search-input" placeholder="فتّش عن المحلات، المنتجات..." oninput="filterProducts()">
+            <input type="text" id="search-input" class="search-input" placeholder="فتّش عن اسم المحل، المنتجات..." oninput="filterProducts()">
         </div>
 
-        <!-- شريط الفئات العلوي -->
         <div class="categories-top">
             <button class="cat-chip active" onclick="filterCat('الكل', this)">الكل 🛍️</button>
             <button class="cat-chip" onclick="filterCat('ملابس', this)">ملابس 👗</button>
@@ -87,19 +89,27 @@
         </div>
     </div>
 
-    <div class="img-viewer-modal" id="img-viewer" onclick="this.style.display='none'">
-        <img id="viewer-img" src="">
+    <!-- نافذة تفاصيل المنشور الكاملة -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:8px;">
+                <strong id="detail-shop-title" style="color:var(--primary); font-size:16px;">تفاصيل العرض</strong>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:18px;" onclick="closeDetailsModal()"></i>
+            </div>
+            <div id="detail-body"></div>
+        </div>
     </div>
 
+    <!-- نافذة التعليقات -->
     <div class="modal" id="comments-modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:8px;">
                 <strong>التعليقات 💬</strong>
                 <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeCommentsModal()"></i>
             </div>
-            <div id="modal-comments-list" style="overflow-y:auto; max-height:50vh; display:flex; flex-direction:column; gap:8px;"></div>
-            <div style="display:flex; gap:6px;">
-                <input type="text" id="modal-comment-input" placeholder="اكتب تعليقك...">
+            <div id="modal-comments-list" style="overflow-y:auto; max-height:40vh; display:flex; flex-direction:column; gap:8px;"></div>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+                <input type="text" id="modal-comment-input" placeholder="اكتب تعليقك..." style="flex:1; padding:8px; border:1px solid #ccc; border-radius:8px;">
                 <button onclick="submitModalComment()" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:8px;">إرسال</button>
             </div>
         </div>
@@ -125,12 +135,6 @@
             renderProducts(allProducts);
         }
 
-        function openImage(url) {
-            if (!url) return;
-            document.getElementById('viewer-img').src = url;
-            document.getElementById('img-viewer').style.display = 'flex';
-        }
-
         function renderProducts(list) {
             const container = document.getElementById('products-list');
             let filtered = list;
@@ -140,7 +144,7 @@
             }
 
             if (!filtered.length) {
-                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #777; padding:20px;">لا توجد نتائج في هذه الفئة.</p>';
+                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #777; padding:20px;">لا توجد نتائج.</p>';
                 return;
             }
 
@@ -149,23 +153,56 @@
                 const likesCount = p.likes || 0;
                 const dislikesCount = p.dislikes || 0;
                 const isMarketing = p.post_type === 'marketing';
+                const shopName = p.shop_name || 'محل محلك';
 
+                if (isMarketing) {
+                    // عرض إعلاني بعرض الشاشة الكاملة
+                    return `
+                    <div class="marketing-card">
+                        <div class="marketing-header">
+                            <div>
+                                <strong style="color:var(--primary); font-size:14px;">🏬 ${shopName}</strong>
+                                <div style="font-size:10px; color:#888;">إعلان تسويقي 📢 • ${p.category || 'عام'}</div>
+                            </div>
+                            <button class="follow-btn" style="width:auto; padding:4px 10px;" onclick="followSeller('${p.phone}')">➕ متابعة</button>
+                        </div>
+                        <div style="padding:10px 12px; font-weight:bold; font-size:14px; color:#111;">${p.title}</div>
+                        ${p.image_url ? `<img src="${p.image_url}" class="marketing-img" onclick="openDetails(${p.id})">` : ''}
+                        <div style="padding:10px 12px; font-size:12px; color:#444;" onclick="openDetails(${p.id})">${p.description || ''}</div>
+                        
+                        <div style="padding: 0 12px 12px 12px;">
+                            <a href="https://wa.me/${p.phone}" target="_blank" style="background:#25D366; color:#fff; text-align:center; padding:8px; border-radius:8px; text-decoration:none; font-size:12px; font-weight:bold; display:block; margin-bottom:8px;">
+                                <i class="fa-brands fa-whatsapp"></i> تواصل مع المعاط
+                            </a>
+                            <div class="actions-bar">
+                                <div style="display:flex; gap:6px;">
+                                    <button class="reaction-btn" onclick="react(${p.id}, 'like', ${likesCount})">👍 ${likesCount}</button>
+                                    <button class="reaction-btn" onclick="react(${p.id}, 'dislike', ${dislikesCount})">👎 ${dislikesCount}</button>
+                                </div>
+                                <button class="comments-btn" onclick="openCommentsModal(${p.id})">💬 ${prodComments.length} تعليقات</button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                // عرض بيع عادي (في الشبكة)
                 return `
                 <div class="product-card">
                     <div>
-                        <div class="card-image-box" onclick="openImage('${p.image_url}')">
+                        <div class="card-image-box" onclick="openDetails(${p.id})">
                             <span class="type-badge">${p.category || 'ملابس'}</span>
                             ${p.image_url ? `<img src="${p.image_url}">` : `<i class="fa-solid fa-bag-shopping fa-2x" style="color:#ccc;"></i>`}
                         </div>
                         <div class="card-content">
-                            <span class="badge-price">${isMarketing ? 'عرض إعلاني' : (p.price ? p.price + ' ج.س' : 'السعر خاص')}</span>
-                            <div class="product-title">${p.title}</div>
-                            <div class="product-desc">${p.description || ''}</div>
+                            <span class="badge-price">${p.price ? p.price + ' ج.س' : 'السعر خاص'}</span>
+                            <div class="product-title" onclick="openDetails(${p.id})" style="cursor:pointer;">${p.title}</div>
+                            <div style="font-size:10px; color:var(--primary); font-weight:bold;">🏬 ${shopName}</div>
                             
                             <a href="https://wa.me/${p.phone}" target="_blank" style="background:#25D366; color:#fff; text-align:center; padding:6px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:bold; margin-top:2px; display:block;">
-                                <i class="fa-brands fa-whatsapp"></i> ${isMarketing ? 'تواصل مع المعاط' : 'اطلب هسي'}
+                                <i class="fa-brands fa-whatsapp"></i> اطلب هسي
                             </a>
-                            <button class="follow-btn" onclick="followSeller('${p.phone}')">➕ متابعة المحل</button>
+                            <button class="follow-btn" onclick="followSeller('${p.phone}')">➕ متابعة</button>
                         </div>
                     </div>
 
@@ -181,6 +218,38 @@
                 </div>
             `;
             }).join('');
+        }
+
+        function openDetails(id) {
+            const p = allProducts.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('detail-shop-title').innerText = p.shop_name ? `🏬 ${p.shop_name}` : 'تفاصيل العرض';
+            let imagesHtml = '';
+            
+            if (p.images && p.images.length > 0) {
+                imagesHtml = p.images.map(img => `<img src="${img}" style="width:100%; border-radius:10px; margin-bottom:8px;">`).join('');
+            } else if (p.image_url) {
+                imagesHtml = `<img src="${p.image_url}" style="width:100%; border-radius:10px; margin-bottom:8px;">`;
+            }
+
+            document.getElementById('detail-body').innerHTML = `
+                ${imagesHtml}
+                <h3 style="color:var(--primary); margin-bottom:6px;">${p.title}</h3>
+                <div style="background:#EAF2FF; color:var(--primary); display:inline-block; padding:4px 10px; border-radius:6px; font-weight:bold; margin-bottom:10px;">
+                    ${p.price ? p.price + ' ج.س' : 'عرض إعلاني'}
+                </div>
+                <p style="font-size:13px; color:#444; line-height:1.5; margin-bottom:15px; white-space:pre-line;">${p.description || 'لا يوجد وصف إضافي.'}</p>
+                <a href="https://wa.me/${p.phone}" target="_blank" style="background:#25D366; color:#fff; text-align:center; padding:10px; border-radius:10px; text-decoration:none; font-size:13px; font-weight:bold; display:block;">
+                    <i class="fa-brands fa-whatsapp"></i> تواصل عبر الواتساب مباشرة
+                </a>
+            `;
+
+            document.getElementById('details-modal').classList.add('active');
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.remove('active');
         }
 
         async function followSeller(sellerPhone) {
@@ -256,7 +325,8 @@
             const query = document.getElementById('search-input').value.toLowerCase();
             const filtered = allProducts.filter(p => 
                 (p.title && p.title.toLowerCase().includes(query)) || 
-                (p.description && p.description.toLowerCase().includes(query))
+                (p.description && p.description.toLowerCase().includes(query)) ||
+                (p.shop_name && p.shop_name.toLowerCase().includes(query))
             );
             renderProducts(filtered);
         }
