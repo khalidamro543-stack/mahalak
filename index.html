@@ -9,15 +9,19 @@
     <style>
         :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; --card-bg: #FFFFFF; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); padding-bottom: 140px; }
+        body { background-color: var(--bg-color); padding-bottom: 90px; }
         
-        /* الهيدر البرتقالي المدمج مع محرك البحث */
-        .orange-header { background: linear-gradient(135deg, #D86438, #F28C38); padding: 15px 15px 20px 15px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(216, 100, 56, 0.25); text-align: center; }
+        .orange-header { background: linear-gradient(135deg, #D86438, #F28C38); padding: 15px 15px 12px 15px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(216, 100, 56, 0.25); text-align: center; }
         .logo-title { font-size: 24px; font-weight: 900; color: #fff; margin-bottom: 2px; }
-        .logo-tagline { font-size: 11px; color: #ffe3d6; font-weight: bold; margin-bottom: 12px; }
-        .search-wrapper { position: relative; width: 100%; max-width: 450px; margin: auto; }
-        .search-input { width: 100%; padding: 12px 40px 12px 15px; border: none; border-radius: 12px; outline: none; font-size: 13px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .search-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #888; }
+        .logo-tagline { font-size: 11px; color: #ffe3d6; font-weight: bold; margin-bottom: 10px; }
+        .search-wrapper { position: relative; width: 100%; max-width: 450px; margin: 0 auto 12px auto; }
+        .search-input { width: 100%; padding: 10px 38px 10px 12px; border: none; border-radius: 10px; outline: none; font-size: 13px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+
+        /* شريط الفئات العلوي تحت البحث */
+        .categories-top { display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: 4px; }
+        .cat-chip { background: rgba(255, 255, 255, 0.25); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; border: none; backdrop-filter: blur(4px); }
+        .cat-chip.active { background: #fff; color: var(--secondary); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
         .product-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: 0 3px 8px rgba(15, 44, 89, 0.08); display: flex; flex-direction: column; justify-content: space-between; }
@@ -33,23 +37,17 @@
         .reaction-btn { border: none; background: #f0f2f5; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: #444; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         .comments-btn { border: none; background: transparent; color: var(--primary); cursor: pointer; font-size: 12px; font-weight: bold; }
 
-        /* شريط الفئات السفلي المباشر فوق التنقل */
-        .categories-fixed { position: fixed; bottom: 68px; left: 0; right: 0; background: #fff; border-top: 1px solid #eee; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; z-index: 999; white-space: nowrap; scrollbar-width: none; }
-        .cat-chip { background: #f0f2f5; color: #444; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; border: none; }
-        .cat-chip.active { background: var(--secondary); color: #fff; }
+        .follow-btn { background: var(--secondary); color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; width: 100%; }
 
-        /* شريط التنقل السفلي بقواعد أوسع */
+        /* شريط التنقل السفلي */
         .bottom-fixed-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); border-radius: 16px 16px 0 0; z-index: 1000; padding: 10px 0 12px 0; }
         .main-nav { display: flex; justify-content: space-around; align-items: center; }
         .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 12px; gap: 4px; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
 
-        /* النوافذ المنبثقة */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
         .modal.active { display: flex; }
         .modal-content { background: #fff; width: 100%; max-height: 80vh; border-radius: 20px 20px 0 0; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        
-        /* معينة الصورة المفتوحة */
         .img-viewer-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; padding: 15px; }
         .img-viewer-modal img { max-width: 100%; max-height: 80vh; border-radius: 10px; }
     </style>
@@ -59,9 +57,21 @@
     <div class="orange-header">
         <div class="logo-title">محلك 🛍️</div>
         <div class="logo-tagline">خليك في محلك</div>
+        
         <div class="search-wrapper">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="search-input" class="search-input" placeholder="فتّش عن المحلات، المنتجات..." oninput="filterProducts()">
+        </div>
+
+        <!-- شريط الفئات العلوي -->
+        <div class="categories-top">
+            <button class="cat-chip active" onclick="filterCat('الكل', this)">الكل 🛍️</button>
+            <button class="cat-chip" onclick="filterCat('ملابس', this)">ملابس 👗</button>
+            <button class="cat-chip" onclick="filterCat('عطور', this)">عطور 🧴</button>
+            <button class="cat-chip" onclick="filterCat('مطاعم وكافيهات', this)">مطاعم وكافيهات 🍔</button>
+            <button class="cat-chip" onclick="filterCat('أجهزة', this)">أجهزة 📱</button>
+            <button class="cat-chip" onclick="filterCat('مركبات', this)">مركبات 🚗</button>
+            <button class="cat-chip" onclick="filterCat('توصيل طلبات', this)">توصيل طلبات 🛵</button>
         </div>
     </div>
 
@@ -69,14 +79,6 @@
         <p style="grid-column: span 2; text-align: center; color: #777; padding: 20px;">جاري تحميل العروض...</p>
     </div>
 
-    <!-- شريط الفئات -->
-    <div class="categories-fixed">
-        <button class="cat-chip active" onclick="filterCat('all', this)">الكل 🛍️</button>
-        <button class="cat-chip" onclick="filterCat('sale', this)">عروض للبيع 🏷️</button>
-        <button class="cat-chip" onclick="filterCat('marketing', this)">تسويق وإعلانات 📢</button>
-    </div>
-
-    <!-- شريط التنقل الرئيسي -->
     <div class="bottom-fixed-wrapper">
         <div class="main-nav">
             <a href="index.html" class="nav-item active"><i class="fa-solid fa-house fa-lg"></i><span>الرئيسية</span></a>
@@ -85,12 +87,10 @@
         </div>
     </div>
 
-    <!-- نافذة تكبير الصورة -->
     <div class="img-viewer-modal" id="img-viewer" onclick="this.style.display='none'">
         <img id="viewer-img" src="">
     </div>
 
-    <!-- نافذة التعليقات -->
     <div class="modal" id="comments-modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:8px;">
@@ -99,7 +99,7 @@
             </div>
             <div id="modal-comments-list" style="overflow-y:auto; max-height:50vh; display:flex; flex-direction:column; gap:8px;"></div>
             <div style="display:flex; gap:6px;">
-                <input type="text" id="modal-comment-input" placeholder="اكتب تعليقك..." style="flex:1; padding:8px; border:1px solid #ccc; border-radius:8px;">
+                <input type="text" id="modal-comment-input" placeholder="اكتب تعليقك...">
                 <button onclick="submitModalComment()" style="background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:8px;">إرسال</button>
             </div>
         </div>
@@ -113,7 +113,7 @@
         let allProducts = [];
         let allComments = [];
         let activeProductId = null;
-        let currentFilterCat = 'all';
+        let currentFilterCat = 'الكل';
 
         async function loadData() {
             const { data: products } = await _supabase.from('products').select('*').order('created_at', { ascending: false });
@@ -135,12 +135,12 @@
             const container = document.getElementById('products-list');
             let filtered = list;
 
-            if (currentFilterCat !== 'all') {
-                filtered = list.filter(p => (p.post_type || 'sale') === currentFilterCat);
+            if (currentFilterCat !== 'الكل') {
+                filtered = list.filter(p => (p.category || 'ملابس') === currentFilterCat);
             }
 
             if (!filtered.length) {
-                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #777; padding:20px;">لا توجد نتائج.</p>';
+                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #777; padding:20px;">لا توجد نتائج في هذه الفئة.</p>';
                 return;
             }
 
@@ -154,7 +154,7 @@
                 <div class="product-card">
                     <div>
                         <div class="card-image-box" onclick="openImage('${p.image_url}')">
-                            <span class="type-badge">${isMarketing ? 'تسويق 📢' : 'للبيع 🛍️'}</span>
+                            <span class="type-badge">${p.category || 'ملابس'}</span>
                             ${p.image_url ? `<img src="${p.image_url}">` : `<i class="fa-solid fa-bag-shopping fa-2x" style="color:#ccc;"></i>`}
                         </div>
                         <div class="card-content">
@@ -165,6 +165,7 @@
                             <a href="https://wa.me/${p.phone}" target="_blank" style="background:#25D366; color:#fff; text-align:center; padding:6px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:bold; margin-top:2px; display:block;">
                                 <i class="fa-brands fa-whatsapp"></i> ${isMarketing ? 'تواصل مع المعاط' : 'اطلب هسي'}
                             </a>
+                            <button class="follow-btn" onclick="followSeller('${p.phone}')">➕ متابعة المحل</button>
                         </div>
                     </div>
 
@@ -180,6 +181,27 @@
                 </div>
             `;
             }).join('');
+        }
+
+        async function followSeller(sellerPhone) {
+            const savedPhone = localStorage.getItem('user_phone');
+            if (!savedPhone) {
+                alert('يرجى تسجيل الدخول أولاً لتتمكن من المتابعة!');
+                return;
+            }
+            if (savedPhone === sellerPhone) {
+                alert('لا يمكنك متابعة نفسك!');
+                return;
+            }
+
+            const { data } = await _supabase.from('followers').select('*').eq('seller_phone', sellerPhone).eq('follower_phone', savedPhone);
+            if (data && data.length > 0) {
+                alert('أنت تتابع هذا المحل بالفعل!');
+                return;
+            }
+
+            await _supabase.from('followers').insert([{ seller_phone: sellerPhone, follower_phone: savedPhone }]);
+            alert('تمت متابعة المحل بنجاح! 🎉');
         }
 
         async function react(productId, type, currentCount) {
