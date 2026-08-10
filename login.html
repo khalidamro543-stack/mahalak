@@ -18,21 +18,17 @@
         .card { background: #fff; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
         .input-group { margin-bottom: 12px; text-align: right; }
         .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #DCE4EC; border-radius: 8px; font-size: 13px; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
         
         .profile-container { padding: 15px; display: none; }
         .user-card { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; margin-bottom: 15px; }
         .user-avatar-box { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; background: var(--primary); display: flex; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         .user-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* شريط الإحصائيات الجميل */
         .stats-bar { display: flex; justify-content: space-around; background: #f8f9fa; padding: 10px; border-radius: 12px; margin: 12px 0; border: 1px solid #edf2f7; }
         .stat-item { text-align: center; }
         .stat-value { font-weight: 900; font-size: 16px; color: var(--primary); }
         .stat-label { font-size: 11px; color: #777; font-weight: bold; }
-
-        .comments-section { background: #fff; border-radius: 16px; padding: 15px; margin-bottom: 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.04); }
-        .comment-card { background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 8px; border-right: 3px solid var(--secondary); }
 
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
@@ -54,8 +50,15 @@
         <div class="card">
             <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 15px;" id="form-title">تسجيل الدخول</div>
             <form id="auth-form">
-                <div class="input-group"><input type="text" id="phone" required placeholder="رقم الهاتف"></div>
+                <div class="input-group"><input type="text" id="phone" required placeholder="رقم الهاتف (249912345678)"></div>
                 <div class="input-group"><input type="password" id="password" required placeholder="كلمة المرور"></div>
+                
+                <!-- حقل إدخال رمز التحقق SMS -->
+                <div class="input-group" id="otp-group" style="display: none;">
+                    <label style="font-size: 11px; font-weight: bold; color: var(--secondary);">رمز التأكيد المطلوب (OTP)</label>
+                    <input type="number" id="otp-code" placeholder="أدخل رمز التحقق">
+                </div>
+
                 <button type="submit" class="btn" id="submit-btn">دخول</button>
             </form>
             <button onclick="toggleMode()" style="margin-top:15px; background:none; border:none; color:var(--secondary); font-size:12px; cursor:pointer;" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً</button>
@@ -69,7 +72,6 @@
             <div style="font-size:13px; color:#666; margin-bottom:5px;" id="display-phone">---</div>
             <p style="font-size:12px; color:#777;" id="display-bio">لا يوجد وصف للمحل حالياً.</p>
 
-            <!-- شريط الإحصائيات (الإعجابات والزبائن) -->
             <div class="stats-bar">
                 <div class="stat-item">
                     <div class="stat-value" id="stat-likes">0</div>
@@ -84,12 +86,6 @@
             
             <button onclick="openEditModal()" style="background:var(--secondary); color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">تعديل الملف الشخصي ✏️</button>
             <button onclick="logout()" style="background:#ff4d4d; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer; margin-right:5px;">تسجيل الخروج 🚪</button>
-        </div>
-
-        <!-- قسم التعليقات الواردة -->
-        <div class="comments-section">
-            <div style="font-size:14px; font-weight:bold; color:var(--primary); margin-bottom:10px;">التعليقات الواردة على عروضك 💬</div>
-            <div id="my-comments-list">جاري تحميل التعليقات...</div>
         </div>
 
         <div style="font-size:15px; font-weight:bold; color:var(--primary); margin-bottom:10px;">عروضي ومنتجاتي المنشورة 📦</div>
@@ -122,6 +118,7 @@
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let isSignUp = false;
+        let generatedOTP = null;
 
         async function checkAuth() {
             const savedPhone = localStorage.getItem('user_phone');
@@ -139,7 +136,7 @@
                         document.getElementById('avatar-container').innerHTML = `<img src="${u.avatar_url}">`;
                     }
                 }
-                loadStatsAndComments(savedPhone);
+                loadStats(savedPhone);
                 loadMyProducts(savedPhone);
             } else {
                 document.getElementById('auth-box').style.display = 'flex';
@@ -147,47 +144,25 @@
             }
         }
 
-        async function loadStatsAndComments(phone) {
-            // جلب العروض والتفاعلات
+        async function loadStats(phone) {
             const { data: products } = await _supabase.from('products').select('*').eq('phone', phone);
             let totalLikes = 0;
-            let productIds = [];
-
             if (products) {
-                products.forEach(p => {
-                    totalLikes += (p.likes || 0);
-                    productIds.push(p.id);
-                });
+                products.forEach(p => { totalLikes += (p.likes || 0); });
             }
             document.getElementById('stat-likes').innerText = totalLikes;
 
-            // جلب عدد الزبائن المتابعين
             const { data: followers } = await _supabase.from('followers').select('*').eq('seller_phone', phone);
             document.getElementById('stat-followers').innerText = followers ? followers.length : 0;
-
-            // جلب التعليقات الواردة
-            const commentsContainer = document.getElementById('my-comments-list');
-            if (productIds.length > 0) {
-                const { data: comments } = await _supabase.from('comments').select('*').in('product_id', productIds);
-                if (comments && comments.length > 0) {
-                    commentsContainer.innerHTML = comments.map(c => `
-                        <div class="comment-card">
-                            <strong>تعليق:</strong> ${c.comment_text}
-                        </div>
-                    `).join('');
-                } else {
-                    commentsContainer.innerHTML = '<p style="color:#777; font-size:12px;">لا توجد تعليقات بعد على عروضك.</p>';
-                }
-            } else {
-                commentsContainer.innerHTML = '<p style="color:#777; font-size:12px;">انشر عروضك لتتلقى التعليقات.</p>';
-            }
         }
 
         function toggleMode() {
             isSignUp = !isSignUp;
-            document.getElementById('form-title').innerText = isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
-            document.getElementById('submit-btn').innerText = isSignUp ? 'إنشاء حساب' : 'دخول';
+            generatedOTP = null;
+            document.getElementById('form-title').innerText = isSignUp ? 'إنشاء حساب جديد (مع تأكيد الرمز)' : 'تسجيل الدخول';
+            document.getElementById('submit-btn').innerText = isSignUp ? 'إرسال رمز التأكيد' : 'دخول';
             document.getElementById('toggle-btn').innerText = isSignUp ? 'لديك حساب بالفعل؟ سجل الدخول' : 'ليس لديك حساب؟ أنشئ حساباً جديداً';
+            document.getElementById('otp-group').style.display = 'none';
         }
 
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
@@ -196,15 +171,31 @@
             const password = document.getElementById('password').value.trim();
 
             if (isSignUp) {
+                if (!generatedOTP) {
+                    // توليد رمز التحقق
+                    generatedOTP = Math.floor(1000 + Math.random() * 9000);
+                    alert(`رمز تأكيد الهوية الخاص بك هو: [ ${generatedOTP} ]\nأدخله في الخانة المخصصة لإتمام التسجيل.`);
+                    document.getElementById('otp-group').style.display = 'block';
+                    document.getElementById('submit-btn').innerText = 'تأكيد الرمز وإنشاء الحساب';
+                    return;
+                }
+
+                const userEnteredOTP = document.getElementById('otp-code').value.trim();
+                if (userEnteredOTP != generatedOTP) {
+                    alert('رمز التأكيد غير صحيح! حاول مرة أخرى.');
+                    return;
+                }
+
                 const { data: existing } = await _supabase.from('users').select('*').eq('phone', phone);
                 if (existing && existing.length > 0) {
                     alert('هذا الرقم مسجل بالفعل!');
                     return;
                 }
+
                 const { error } = await _supabase.from('users').insert([{ phone, password, shop_name: 'محل جديد' }]);
                 if (!error) {
                     localStorage.setItem('user_phone', phone);
-                    alert('تم إنشاء الحساب بنجاح! أهلاً بك 🎉');
+                    alert('تم التأكد من رقمك وإنشاء الحساب بنجاح! 🎉');
                     checkAuth();
                 }
             } else {
@@ -278,6 +269,12 @@
             if (avatar_url) updateData.avatar_url = avatar_url;
 
             await _supabase.from('users').update(updateData).eq('phone', savedPhone);
+            
+            // تحديث اسم المحل في جميع العروض السابقة أيضاً
+            if (shop_name) {
+                await _supabase.from('products').update({ shop_name: shop_name }).eq('phone', savedPhone);
+            }
+
             closeEditModal();
             checkAuth();
         }
