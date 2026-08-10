@@ -9,7 +9,7 @@
     <style>
         :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; --card-bg: #FFFFFF; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); min-height: 100vh; padding-bottom: 100px; }
+        body { background-color: var(--bg-color); min-height: 100vh; padding-bottom: 120px; }
         
         .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo-title { font-size: 22px; font-weight: 900; color: var(--primary); }
@@ -17,78 +17,72 @@
         .auth-container { padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 70vh; }
         .card { background: #fff; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
         .input-group { margin-bottom: 12px; text-align: right; }
-        .input-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
-        .input-group input { width: 100%; padding: 12px 15px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .toggle-btn { margin-top: 15px; background: none; border: none; color: var(--secondary); font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #DCE4EC; border-radius: 8px; font-size: 13px; outline: none; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
         
         .profile-container { padding: 15px; display: none; }
         .user-card { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
         .user-avatar-box { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; background: var(--primary); display: flex; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         .user-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        .user-phone { font-size: 16px; font-weight: bold; color: var(--primary); }
-        .logout-btn { background: #ff4d4d; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        .section-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 12px; }
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
         .card-image-box { width: 100%; height: 110px; background: #f7f9fa; display: flex; align-items: center; justify-content: center; }
         .card-image-box img { width: 100%; height: 100%; object-fit: cover; }
-        .card-content { padding: 8px; }
         .delete-btn { background: #ff4d4d; color: #fff; border: none; padding: 6px; border-radius: 6px; font-size: 11px; width: 100%; margin-top: 5px; cursor: pointer; font-weight: bold; }
 
-        .bottom-fixed-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); border-radius: 18px 18px 0 0; z-index: 1000; padding-bottom: 8px; }
-        .main-nav { display: flex; justify-content: space-around; align-items: center; padding-top: 8px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 11px; gap: 2px; }
+        .bottom-fixed-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); border-radius: 16px 16px 0 0; z-index: 1000; padding: 10px 0 12px 0; }
+        .main-nav { display: flex; justify-content: space-around; align-items: center; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 12px; gap: 4px; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo-title">محلك 🛍️</div>
-    </div>
+    <div class="header"><div class="logo-title">محلك 🛍️</div></div>
 
-    <!-- نموذج الدخول والتسجيل -->
+    <!-- تسجيل الدخول -->
     <div class="auth-container" id="auth-box">
         <div class="card">
             <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 15px;" id="form-title">تسجيل الدخول</div>
             <form id="auth-form">
-                <div class="input-group">
-                    <input type="text" id="phone" required placeholder="رقم الهاتف (مثال: 249912345678)">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="password" required placeholder="كلمة المرور">
-                </div>
-                <div class="input-group" id="confirm-pass-group" style="display: none;">
-                    <input type="password" id="confirm-password" placeholder="تأكيد كلمة المرور">
-                </div>
-                <div class="input-group" id="avatar-group" style="display: none;">
-                    <label>الصورة الشخصية (اختياري)</label>
-                    <input type="file" id="avatar-file" accept="image/*">
-                </div>
+                <div class="input-group"><input type="text" id="phone" required placeholder="رقم الهاتف"></div>
+                <div class="input-group"><input type="password" id="password" required placeholder="كلمة المرور"></div>
                 <button type="submit" class="btn" id="submit-btn">دخول</button>
             </form>
-            <button class="toggle-btn" onclick="toggleMode()" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
+            <button onclick="toggleMode()" style="margin-top:15px; background:none; border:none; color:var(--secondary); font-size:12px; cursor:pointer;" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً</button>
         </div>
     </div>
 
-    <!-- واجهة الملف الشخصي -->
+    <!-- الملف الشخصي وتعديل البيانات -->
     <div class="profile-container" id="profile-box">
         <div class="user-card">
-            <div class="user-avatar-box" id="avatar-container">
-                <i class="fa-solid fa-user fa-2x" style="color: #fff;"></i>
-            </div>
-            <div class="user-phone" id="display-phone">---</div>
-            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            <div class="user-avatar-box" id="avatar-container"><i class="fa-solid fa-user fa-2x" style="color:#fff;"></i></div>
+            <div style="font-weight:bold; color:var(--primary); font-size:18px;" id="display-shop-name">متجري</div>
+            <div style="font-size:13px; color:#666; margin-bottom:5px;" id="display-phone">---</div>
+            <p style="font-size:12px; color:#777; margin-bottom:10px;" id="display-bio">لا يوجد وصف للمحل حالياً.</p>
+            
+            <button onclick="openEditModal()" style="background:var(--secondary); color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">تعديل الملف الشخصي ✏️</button>
+            <button onclick="logout()" style="background:#ff4d4d; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer; margin-right:5px;">تسجيل الخروج 🚪</button>
         </div>
 
-        <div class="section-title">عروضي ومنتجاتي المنشورة 📦</div>
-        <div class="products-grid" id="my-products-list">
-            <p style="grid-column: span 2; text-align: center; color: #777;">جاري تحميل عروضك...</p>
+        <div style="font-size:15px; font-weight:bold; color:var(--primary); margin-bottom:10px;">عروضي ومنتجاتي المنشورة 📦</div>
+        <div class="products-grid" id="my-products-list"></div>
+    </div>
+
+    <!-- نافذة تعديل البيانات -->
+    <div id="edit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; justify-content:center; align-items:center; padding:15px;">
+        <div style="background:#fff; width:100%; max-width:350px; border-radius:12px; padding:20px;">
+            <h4 style="margin-bottom:12px; color:var(--primary);">تعديل معلومات المحل</h4>
+            <div class="input-group"><input type="text" id="edit-shop-name" placeholder="اسم المحل"></div>
+            <div class="input-group"><textarea id="edit-bio" rows="2" placeholder="وصف عن المحل..."></textarea></div>
+            <div class="input-group"><label style="font-size:11px;">تغيير الصورة الشخصية</label><input type="file" id="edit-avatar-file" accept="image/*"></div>
+            <button onclick="saveProfile()" class="btn" style="margin-bottom:8px;">حفظ التغييرات</button>
+            <button onclick="closeEditModal()" style="width:100%; background:#ccc; border:none; padding:8px; border-radius:8px;">إلغاء</button>
         </div>
     </div>
 
+    <!-- شريط التنقل السفلي -->
     <div class="bottom-fixed-wrapper">
         <div class="main-nav">
             <a href="index.html" class="nav-item"><i class="fa-solid fa-house fa-lg"></i><span>الرئيسية</span></a>
@@ -104,17 +98,21 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let isSignUp = false;
 
-        function checkAuth() {
+        async function checkAuth() {
             const savedPhone = localStorage.getItem('user_phone');
-            const savedAvatar = localStorage.getItem('user_avatar');
-
             if (savedPhone) {
                 document.getElementById('auth-box').style.display = 'none';
                 document.getElementById('profile-box').style.display = 'block';
                 document.getElementById('display-phone').innerText = savedPhone;
 
-                if (savedAvatar) {
-                    document.getElementById('avatar-container').innerHTML = `<img src="${savedAvatar}">`;
+                const { data } = await _supabase.from('users').select('*').eq('phone', savedPhone);
+                if (data && data.length > 0) {
+                    const u = data[0];
+                    document.getElementById('display-shop-name').innerText = u.shop_name || 'محل بدون اسم';
+                    document.getElementById('display-bio').innerText = u.bio || 'لا يوجد وصف للمحل حالياً.';
+                    if (u.avatar_url) {
+                        document.getElementById('avatar-container').innerHTML = `<img src="${u.avatar_url}">`;
+                    }
                 }
                 loadMyProducts(savedPhone);
             } else {
@@ -128,71 +126,34 @@
             document.getElementById('form-title').innerText = isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
             document.getElementById('submit-btn').innerText = isSignUp ? 'إنشاء حساب' : 'دخول';
             document.getElementById('toggle-btn').innerText = isSignUp ? 'لديك حساب بالفعل؟ سجل الدخول' : 'ليس لديك حساب؟ أنشئ حساباً جديداً';
-            document.getElementById('confirm-pass-group').style.display = isSignUp ? 'block' : 'none';
-            document.getElementById('avatar-group').style.display = isSignUp ? 'block' : 'none';
         }
 
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submit-btn');
             const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value.trim();
 
             if (isSignUp) {
-                const confirmPassword = document.getElementById('confirm-password').value.trim();
-                if (password !== confirmPassword) {
-                    alert('كلمتا المرور غير متطابقتين!');
-                    return;
-                }
-
-                btn.disabled = true;
-                btn.innerText = 'جاري إنشاء الحساب...';
-
-                const avatarFile = document.getElementById('avatar-file').files[0];
-                let avatarUrl = null;
-
-                if (avatarFile) {
-                    const fileExt = avatarFile.name.split('.').pop();
-                    const fileName = `avatar_${Date.now()}.${fileExt}`;
-                    const { data: uploadData } = await _supabase.storage.from('products').upload(fileName, avatarFile);
-                    if (uploadData) {
-                        const { data: publicUrlData } = _supabase.storage.from('products').getPublicUrl(fileName);
-                        avatarUrl = publicUrlData.publicUrl;
-                    }
-                }
-
                 const { data: existing } = await _supabase.from('users').select('*').eq('phone', phone);
                 if (existing && existing.length > 0) {
                     alert('هذا الرقم مسجل بالفعل!');
-                    btn.disabled = false;
-                    btn.innerText = 'إنشاء حساب';
                     return;
                 }
-
-                const { error } = await _supabase.from('users').insert([{ phone, password }]);
+                const { error } = await _supabase.from('users').insert([{ phone, password, shop_name: 'محل جديد' }]);
                 if (!error) {
                     localStorage.setItem('user_phone', phone);
-                    if (avatarUrl) localStorage.setItem('user_avatar', avatarUrl);
-                    alert('تم إنشاء الحساب وتسجيل الدخول بنجاح! 🎉');
+                    alert('تم إنشاء الحساب بنجاح! أهلاً بك 🎉');
                     checkAuth();
-                } else {
-                    alert('حدث خطأ أثناء الإنشاء.');
                 }
-                btn.disabled = false;
-                btn.innerText = 'إنشاء حساب';
             } else {
-                btn.disabled = true;
-                btn.innerText = 'جاري التأكد...';
                 const { data } = await _supabase.from('users').select('*').eq('phone', phone).eq('password', password);
                 if (data && data.length > 0) {
                     localStorage.setItem('user_phone', phone);
-                    alert('تم تسجيل الدخول بنجاح! أهلاً بك 🎉');
+                    alert('تم تسجيل الدخول بنجاح! 🎉');
                     checkAuth();
                 } else {
-                    alert('رقم الهاتف أو كلمة المرور غير صحيحة.');
+                    alert('بيانات الدخول غير صحيحة.');
                 }
-                btn.disabled = false;
-                btn.innerText = 'دخول';
             }
         });
 
@@ -210,9 +171,8 @@
                     <div class="card-image-box">
                         ${p.image_url ? `<img src="${p.image_url}">` : `<i class="fa-solid fa-bag-shopping fa-2x" style="color:#ccc;"></i>`}
                     </div>
-                    <div class="card-content">
+                    <div style="padding:8px;">
                         <div style="font-weight:bold; font-size:12px;">${p.title}</div>
-                        <div style="color:var(--primary); font-weight:bold; font-size:11px;">${p.price || 0} ج.س</div>
                         <button class="delete-btn" onclick="deleteProduct(${p.id})">حذف العرض 🗑️</button>
                     </div>
                 </div>
@@ -221,14 +181,47 @@
 
         async function deleteProduct(id) {
             if (confirm('هل أنت تأكد من رغبتك في حذف هذا العرض؟')) {
-                await _supabase.from('products').delete().eq('id', id);
-                checkAuth();
+                const { error } = await _supabase.from('products').delete().eq('id', id);
+                if (!error) {
+                    alert('تم حذف العرض بنجاح!');
+                    checkAuth();
+                } else {
+                    alert('حدث خطأ أثناء الحذف.');
+                }
             }
+        }
+
+        function openEditModal() { document.getElementById('edit-modal').style.display = 'flex'; }
+        function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
+
+        async function saveProfile() {
+            const savedPhone = localStorage.getItem('user_phone');
+            const shop_name = document.getElementById('edit-shop-name').value.trim();
+            const bio = document.getElementById('edit-bio').value.trim();
+            const avatarFile = document.getElementById('edit-avatar-file').files[0];
+
+            let avatar_url = null;
+            if (avatarFile) {
+                const fileName = `avatar_${Date.now()}.${avatarFile.name.split('.').pop()}`;
+                const { data } = await _supabase.storage.from('products').upload(fileName, avatarFile);
+                if (data) {
+                    const { data: pubData } = _supabase.storage.from('products').getPublicUrl(fileName);
+                    avatar_url = pubData.publicUrl;
+                }
+            }
+
+            const updateData = {};
+            if (shop_name) updateData.shop_name = shop_name;
+            if (bio) updateData.bio = bio;
+            if (avatar_url) updateData.avatar_url = avatar_url;
+
+            await _supabase.from('users').update(updateData).eq('phone', savedPhone);
+            closeEditModal();
+            checkAuth();
         }
 
         function logout() {
             localStorage.removeItem('user_phone');
-            localStorage.removeItem('user_avatar');
             checkAuth();
         }
 
