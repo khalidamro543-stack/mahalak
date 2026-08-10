@@ -14,7 +14,7 @@
         .form-title { text-align: center; color: var(--primary); font-size: 20px; font-weight: bold; margin-bottom: 15px; }
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #444; }
-        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #DCE4EC; border-radius: 8px; font-size: 13px; outline: none; }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; border: 1px solid #DCE4EC; border-radius: 8px; font-size: 13px; outline: none; }
         .submit-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
@@ -24,24 +24,31 @@
         <div class="form-title">نزّل عرضك الجديد 🛍️</div>
         <form id="add-form">
             <div class="input-group">
-                <label>اسم المنتج / العرض</label>
-                <input type="text" id="title" required placeholder="مثال: بجامات أطفال">
+                <label>نوع المنشور</label>
+                <select id="post_type" onchange="togglePriceInput(this.value)">
+                    <option value="sale">عرض منتج للبيع 🛍️</option>
+                    <option value="marketing">تسويق وإعلان فقط 📢</option>
+                </select>
             </div>
             <div class="input-group">
+                <label>العنوان</label>
+                <input type="text" id="title" required placeholder="عنوان المنتج أو الخدمة">
+            </div>
+            <div class="input-group" id="price-group">
                 <label>السعر (بالجنيه)</label>
-                <input type="number" id="price" required placeholder="مثال: 20000">
+                <input type="number" id="price" placeholder="مثال: 20000">
             </div>
             <div class="input-group">
                 <label>التفاصيل</label>
-                <textarea id="description" rows="3" placeholder="وصف المنتج، الخامة، المقاسات..."></textarea>
+                <textarea id="description" rows="3" placeholder="وصف العرض..."></textarea>
             </div>
             <div class="input-group">
                 <label>رقم الواتساب (بدون +)</label>
                 <input type="text" id="phone" required placeholder="249912345678">
             </div>
             <div class="input-group">
-                <label>صورة المنتج (اختياري)</label>
-                <input type="file" id="image-file" accept="image/*">
+                <label>صور المنتج (يمكنك اختيار أكثر من صورة)</label>
+                <input type="file" id="image-files" accept="image/*" multiple>
             </div>
             <button type="submit" class="submit-btn" id="submit-btn">انشر العرض هسي 🚀</button>
         </form>
@@ -53,53 +60,50 @@
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        function togglePriceInput(val) {
+            document.getElementById('price-group').style.display = val === 'marketing' ? 'none' : 'block';
+        }
+
         document.getElementById('add-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
-            btn.innerText = 'جاري النشر وتنسيق الصورة...';
+            btn.innerText = 'جاري رفع البيانات والتنسيق...';
 
+            const post_type = document.getElementById('post_type').value;
             const title = document.getElementById('title').value;
             const price = document.getElementById('price').value;
             const description = document.getElementById('description').value;
             const phone = document.getElementById('phone').value;
-            const imageFile = document.getElementById('image-file').files[0];
+            const files = document.getElementById('image-files').files;
 
-            let imageUrl = null;
+            let imageUrls = [];
 
-            if (imageFile) {
-                const fileExt = imageFile.name.split('.').pop();
-                const fileName = `${Date.now()}.${fileExt}`;
-
-                const { data: uploadData, error: uploadError } = await _supabase.storage
-                    .from('products')
-                    .upload(fileName, imageFile);
-
-                if (uploadError) {
-                    alert('خطأ في رفع الصورة: ' + uploadError.message);
-                    btn.disabled = false;
-                    btn.innerText = 'انشر العرض هسي 🚀';
-                    return;
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const fileName = `${Date.now()}_${i}.${file.name.split('.').pop()}`;
+                    const { data } = await _supabase.storage.from('products').upload(fileName, file);
+                    if (data) {
+                        const { data: pubData } = _supabase.storage.from('products').getPublicUrl(fileName);
+                        imageUrls.push(pubData.publicUrl);
+                    }
                 }
-
-                const { data: publicUrlData } = _supabase.storage
-                    .from('products')
-                    .getPublicUrl(fileName);
-
-                imageUrl = publicUrlData.publicUrl;
             }
 
+            const mainImageUrl = imageUrls.length > 0 ? imageUrls[0] : null;
+
             const { error } = await _supabase.from('products').insert([
-                { title, price, description, phone, image_url: imageUrl }
+                { title, price: post_type === 'sale' ? price : null, description, phone, image_url: mainImageUrl, images: imageUrls, post_type }
             ]);
 
-            if (error) {
-                alert('حدث خطأ أثناء النشر، حاول مرة أخرى.');
-                btn.disabled = false;
-                btn.innerText = 'انشر العرض هسي 🚀';
-            } else {
+            if (!error) {
                 alert('تم نشر عرضك بنجاح! 🎉');
                 window.location.href = 'index.html';
+            } else {
+                alert('حدث خطأ أثناء النشر.');
+                btn.disabled = false;
+                btn.innerText = 'انشر العرض هسي 🚀';
             }
         });
     </script>
