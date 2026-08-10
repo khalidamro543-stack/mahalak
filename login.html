@@ -3,53 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - محلك</title>
+    <title>حسابي - محلك</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; }
+        :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; --card-bg: #FFFFFF; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        body { background-color: var(--bg-color); min-height: 100vh; padding-bottom: 100px; }
+        
+        .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo-title { font-size: 22px; font-weight: 900; color: var(--primary); }
+        
+        /* واجهة الدخول */
+        .auth-container { padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 70vh; }
         .card { background: #fff; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
-        .logo-title { font-size: 26px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
-        .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
         .input-group { margin-bottom: 12px; }
         .input-group input { width: 100%; padding: 12px 15px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
         .toggle-btn { margin-top: 15px; background: none; border: none; color: var(--secondary); font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
-        .home-link { display: block; margin-top: 15px; color: var(--secondary); font-size: 12px; text-decoration: none; font-weight: bold; }
+        
+        /* واجهة الملف الشخصي */
+        .profile-container { padding: 15px; display: none; }
+        .user-card { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        .user-avatar { width: 60px; height: 60px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 10px auto; }
+        .user-phone { font-size: 16px; font-weight: bold; color: var(--primary); }
+        .logout-btn { background: #ff4d4d; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        .section-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 12px; }
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .product-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .card-image-box { width: 100%; height: 110px; background: #f7f9fa; display: flex; align-items: center; justify-content: center; }
+        .card-image-box img { width: 100%; height: 100%; object-fit: cover; }
+        .card-content { padding: 8px; }
+        .delete-btn { background: #ff4d4d; color: #fff; border: none; padding: 6px; border-radius: 6px; font-size: 11px; width: 100%; margin-top: 5px; cursor: pointer; font-weight: bold; }
+
+        .bottom-fixed-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.08); border-radius: 18px 18px 0 0; z-index: 1000; padding-bottom: 8px; }
+        .main-nav { display: flex; justify-content: space-around; align-items: center; padding-top: 8px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #888; font-size: 11px; gap: 2px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="card">
+    <div class="header">
         <div class="logo-title">محلك 🛍️</div>
-        <div class="subtitle" id="form-subtitle">سجل دخولك لمتابعة عروضك</div>
+    </div>
 
-        <form id="auth-form">
-            <div class="input-group">
-                <input type="text" id="phone" required placeholder="رقم الهاتف (مثال: 249912345678)">
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" required placeholder="كلمة المرور">
-            </div>
-            <button type="submit" class="btn" id="submit-btn">دخول</button>
-        </form>
+    <!-- 1. نموذج الدخول والتسجيل -->
+    <div class="auth-container" id="auth-box">
+        <div class="card">
+            <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 10px;" id="form-title">تسجيل الدخول</div>
+            <form id="auth-form">
+                <div class="input-group">
+                    <input type="text" id="phone" required placeholder="رقم الهاتف (مثال: 249912345678)">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" required placeholder="كلمة المرور">
+                </div>
+                <button type="submit" class="btn" id="submit-btn">دخول</button>
+            </form>
+            <button class="toggle-btn" onclick="toggleMode()" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
+        </div>
+    </div>
 
-        <button class="toggle-btn" onclick="toggleMode()" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
-        <a href="index.html" class="home-link">العودة للرئيسية</a>
+    <!-- 2. واجهة الملف الشخصي ومنتجاتي -->
+    <div class="profile-container" id="profile-box">
+        <div class="user-card">
+            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+            <div class="user-phone" id="display-phone">---</div>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+        </div>
+
+        <div class="section-title">عروضي ومنتجاتي المنشورة 📦</div>
+        <div class="products-grid" id="my-products-list">
+            <p style="grid-column: span 2; text-align: center; color: #777;">جاري تحميل عروضك...</p>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <div class="bottom-fixed-wrapper">
+        <div class="main-nav">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house fa-lg"></i><span>الرئيسية</span></a>
+            <a href="add.html" class="nav-item"><i class="fa-solid fa-plus-circle fa-lg" style="color: var(--secondary);"></i><span>نزّل عرضك</span></a>
+            <a href="login.html" class="nav-item active"><i class="fa-solid fa-user fa-lg"></i><span>حسابي</span></a>
+        </div>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://iagvkchymgvewvivxilv.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_l2lB13ZRtO41IUXZMBWVmw_tSwstU74';
+        const SUPABASE_KEY = '';
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let isSignUp = false;
 
+        function checkAuth() {
+            const savedPhone = localStorage.getItem('user_phone');
+            if (savedPhone) {
+                document.getElementById('auth-box').style.display = 'none';
+                document.getElementById('profile-box').style.display = 'block';
+                document.getElementById('display-phone').innerText = savedPhone;
+                loadMyProducts(savedPhone);
+            } else {
+                document.getElementById('auth-box').style.display = 'flex';
+                document.getElementById('profile-box').style.display = 'none';
+            }
+        }
+
         function toggleMode() {
             isSignUp = !isSignUp;
-            document.getElementById('form-subtitle').innerText = isSignUp ? 'أنشئ حسابك الجديد في ثوانٍ' : 'سجل دخولك لمتابعة عروضك';
+            document.getElementById('form-title').innerText = isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
             document.getElementById('submit-btn').innerText = isSignUp ? 'إنشاء حساب' : 'دخول';
             document.getElementById('toggle-btn').innerText = isSignUp ? 'لديك حساب بالفعل؟ سجل الدخول' : 'ليس لديك حساب؟ أنشئ حساباً جديداً';
         }
@@ -60,33 +122,65 @@
             const password = document.getElementById('password').value.trim();
 
             if (isSignUp) {
-                // إنشاء حساب
                 const { data: existing } = await _supabase.from('users').select('*').eq('phone', phone);
                 if (existing && existing.length > 0) {
                     alert('هذا الرقم مسجل بالفعل!');
                     return;
                 }
-
                 const { error } = await _supabase.from('users').insert([{ phone, password }]);
                 if (error) {
                     alert('حدث خطأ أثناء إنشاء الحساب.');
                 } else {
                     localStorage.setItem('user_phone', phone);
-                    alert('تم إنشاء الحساب وتسجيل الدخول بنجاح! 🎉');
-                    window.location.href = 'index.html';
+                    checkAuth();
                 }
             } else {
-                // تسجيل الدخول
-                const { data, error } = await _supabase.from('users').select('*').eq('phone', phone).eq('password', password);
+                const { data } = await _supabase.from('users').select('*').eq('phone', phone).eq('password', password);
                 if (data && data.length > 0) {
                     localStorage.setItem('user_phone', phone);
-                    alert('أهلاً بك! تم تسجيل الدخول بنجاح.');
-                    window.location.href = 'index.html';
+                    checkAuth();
                 } else {
                     alert('رقم الهاتف أو كلمة المرور غير صحيحة.');
                 }
             }
         });
+
+        async function loadMyProducts(phone) {
+            const { data: products } = await _supabase.from('products').select('*').eq('phone', phone).order('created_at', { ascending: false });
+            const container = document.getElementById('my-products-list');
+
+            if (!products || products.length === 0) {
+                container.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #777;">لم تقم بنشر أي عروض بعد.</p>';
+                return;
+            }
+
+            container.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="card-image-box">
+                        ${p.image_url ? `<img src="${p.image_url}">` : `<i class="fa-solid fa-bag-shopping fa-2x" style="color:#ccc;"></i>`}
+                    </div>
+                    <div class="card-content">
+                        <div style="font-weight:bold; font-size:12px;">${p.title}</div>
+                        <div style="color:var(--primary); font-weight:bold; font-size:11px;">${p.price || 0} ج.س</div>
+                        <button class="delete-btn" onclick="deleteProduct(${p.id})">حذف العرض 🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا العرض؟')) {
+                await _supabase.from('products').delete().eq('id', id);
+                checkAuth();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user_phone');
+            checkAuth();
+        }
+
+        checkAuth();
     </script>
 </body>
 </html>
