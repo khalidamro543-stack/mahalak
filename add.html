@@ -31,8 +31,19 @@
                 </select>
             </div>
             <div class="input-group">
+                <label>الفئة</label>
+                <select id="category">
+                    <option value="ملابس">ملابس 👗</option>
+                    <option value="عطور">عطور 🧴</option>
+                    <option value="مطاعم وكافيهات">مطاعم وكافيهات 🍔</option>
+                    <option value="أجهزة">أجهزة 📱</option>
+                    <option value="مركبات">مركبات 🚗</option>
+                    <option value="توصيل طلبات">توصيل طلبات 🛵</option>
+                </select>
+            </div>
+            <div class="input-group">
                 <label>العنوان</label>
-                <input type="text" id="title" required placeholder="عنوان المنتج أو الخدمة">
+                <input type="text" id="title" required placeholder="عنوان العرض أو الخدمة">
             </div>
             <div class="input-group" id="price-group">
                 <label>السعر (بالجنيه)</label>
@@ -71,6 +82,7 @@
             btn.innerText = 'جاري رفع البيانات والتنسيق...';
 
             const post_type = document.getElementById('post_type').value;
+            const category = document.getElementById('category').value;
             const title = document.getElementById('title').value;
             const price = document.getElementById('price').value;
             const description = document.getElementById('description').value;
@@ -94,7 +106,7 @@
             const mainImageUrl = imageUrls.length > 0 ? imageUrls[0] : null;
 
             const { error } = await _supabase.from('products').insert([
-                { title, price: post_type === 'sale' ? price : null, description, phone, image_url: mainImageUrl, images: imageUrls, post_type }
+                { title, price: post_type === 'sale' ? price : null, description, phone, image_url: mainImageUrl, images: imageUrls, post_type, category }
             ]);
 
             if (!error) {
