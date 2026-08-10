@@ -42,8 +42,8 @@
                 </select>
             </div>
             <div class="input-group">
-                <label>العنوان</label>
-                <input type="text" id="title" required placeholder="عنوان العرض أو الخدمة">
+                <label>عنوان العرض / الخدمة</label>
+                <input type="text" id="title" required placeholder="مثال: آيفون اكس عادي / توصيل سريع">
             </div>
             <div class="input-group" id="price-group">
                 <label>السعر (بالجنيه)</label>
@@ -51,14 +51,14 @@
             </div>
             <div class="input-group">
                 <label>التفاصيل</label>
-                <textarea id="description" rows="3" placeholder="وصف العرض..."></textarea>
+                <textarea id="description" rows="3" placeholder="وصف العرض بالكامل..."></textarea>
             </div>
             <div class="input-group">
-                <label>رقم الواتساب (بدون +)</label>
+                <label>رقم الواتساب للتواصل (بدون +)</label>
                 <input type="text" id="phone" required placeholder="249912345678">
             </div>
             <div class="input-group">
-                <label>صور المنتج (يمكنك اختيار أكثر من صورة)</label>
+                <label>صور المنتج (يمكن اختيار أكثر من صورة)</label>
                 <input type="file" id="image-files" accept="image/*" multiple>
             </div>
             <button type="submit" class="submit-btn" id="submit-btn">انشر العرض هسي 🚀</button>
@@ -89,6 +89,13 @@
             const phone = document.getElementById('phone').value;
             const files = document.getElementById('image-files').files;
 
+            // جلب اسم المحل المسجل للحساب
+            let shopName = 'محلك';
+            const { data: userData } = await _supabase.from('users').select('shop_name').eq('phone', phone);
+            if (userData && userData.length > 0 && userData[0].shop_name) {
+                shopName = userData[0].shop_name;
+            }
+
             let imageUrls = [];
 
             if (files.length > 0) {
@@ -106,7 +113,7 @@
             const mainImageUrl = imageUrls.length > 0 ? imageUrls[0] : null;
 
             const { error } = await _supabase.from('products').insert([
-                { title, price: post_type === 'sale' ? price : null, description, phone, image_url: mainImageUrl, images: imageUrls, post_type, category }
+                { title, price: post_type === 'sale' ? price : null, description, phone, image_url: mainImageUrl, images: imageUrls, post_type, category, shop_name: shopName }
             ]);
 
             if (!error) {
