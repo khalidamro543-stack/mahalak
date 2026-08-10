@@ -14,18 +14,18 @@
         .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo-title { font-size: 22px; font-weight: 900; color: var(--primary); }
         
-        /* واجهة الدخول */
         .auth-container { padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 70vh; }
         .card { background: #fff; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
-        .input-group { margin-bottom: 12px; }
+        .input-group { margin-bottom: 12px; text-align: right; }
+        .input-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
         .input-group input { width: 100%; padding: 12px 15px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .toggle-btn { margin-top: 15px; background: none; border: none; color: var(--secondary); font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
         
-        /* واجهة الملف الشخصي */
         .profile-container { padding: 15px; display: none; }
         .user-card { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
-        .user-avatar { width: 60px; height: 60px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 10px auto; }
+        .user-avatar-box { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 10px auto; overflow: hidden; background: var(--primary); display: flex; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .user-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
         .user-phone { font-size: 16px; font-weight: bold; color: var(--primary); }
         .logout-btn { background: #ff4d4d; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
@@ -49,10 +49,10 @@
         <div class="logo-title">محلك 🛍️</div>
     </div>
 
-    <!-- 1. نموذج الدخول والتسجيل -->
+    <!-- نموذج الدخول والتسجيل -->
     <div class="auth-container" id="auth-box">
         <div class="card">
-            <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 10px;" id="form-title">تسجيل الدخول</div>
+            <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 15px;" id="form-title">تسجيل الدخول</div>
             <form id="auth-form">
                 <div class="input-group">
                     <input type="text" id="phone" required placeholder="رقم الهاتف (مثال: 249912345678)">
@@ -60,16 +60,25 @@
                 <div class="input-group">
                     <input type="password" id="password" required placeholder="كلمة المرور">
                 </div>
+                <div class="input-group" id="confirm-pass-group" style="display: none;">
+                    <input type="password" id="confirm-password" placeholder="تأكيد كلمة المرور">
+                </div>
+                <div class="input-group" id="avatar-group" style="display: none;">
+                    <label>الصورة الشخصية (اختياري)</label>
+                    <input type="file" id="avatar-file" accept="image/*">
+                </div>
                 <button type="submit" class="btn" id="submit-btn">دخول</button>
             </form>
             <button class="toggle-btn" onclick="toggleMode()" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
         </div>
     </div>
 
-    <!-- 2. واجهة الملف الشخصي ومنتجاتي -->
+    <!-- واجهة الملف الشخصي -->
     <div class="profile-container" id="profile-box">
         <div class="user-card">
-            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+            <div class="user-avatar-box" id="avatar-container">
+                <i class="fa-solid fa-user fa-2x" style="color: #fff;"></i>
+            </div>
             <div class="user-phone" id="display-phone">---</div>
             <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
         </div>
@@ -80,7 +89,6 @@
         </div>
     </div>
 
-    <!-- شريط التنقل السفلي -->
     <div class="bottom-fixed-wrapper">
         <div class="main-nav">
             <a href="index.html" class="nav-item"><i class="fa-solid fa-house fa-lg"></i><span>الرئيسية</span></a>
@@ -98,10 +106,16 @@
 
         function checkAuth() {
             const savedPhone = localStorage.getItem('user_phone');
+            const savedAvatar = localStorage.getItem('user_avatar');
+
             if (savedPhone) {
                 document.getElementById('auth-box').style.display = 'none';
                 document.getElementById('profile-box').style.display = 'block';
                 document.getElementById('display-phone').innerText = savedPhone;
+
+                if (savedAvatar) {
+                    document.getElementById('avatar-container').innerHTML = `<img src="${savedAvatar}">`;
+                }
                 loadMyProducts(savedPhone);
             } else {
                 document.getElementById('auth-box').style.display = 'flex';
@@ -114,34 +128,71 @@
             document.getElementById('form-title').innerText = isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
             document.getElementById('submit-btn').innerText = isSignUp ? 'إنشاء حساب' : 'دخول';
             document.getElementById('toggle-btn').innerText = isSignUp ? 'لديك حساب بالفعل؟ سجل الدخول' : 'ليس لديك حساب؟ أنشئ حساباً جديداً';
+            document.getElementById('confirm-pass-group').style.display = isSignUp ? 'block' : 'none';
+            document.getElementById('avatar-group').style.display = isSignUp ? 'block' : 'none';
         }
 
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('submit-btn');
             const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value.trim();
 
             if (isSignUp) {
+                const confirmPassword = document.getElementById('confirm-password').value.trim();
+                if (password !== confirmPassword) {
+                    alert('كلمتا المرور غير متطابقتين!');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerText = 'جاري إنشاء الحساب...';
+
+                const avatarFile = document.getElementById('avatar-file').files[0];
+                let avatarUrl = null;
+
+                if (avatarFile) {
+                    const fileExt = avatarFile.name.split('.').pop();
+                    const fileName = `avatar_${Date.now()}.${fileExt}`;
+                    const { data: uploadData } = await _supabase.storage.from('products').upload(fileName, avatarFile);
+                    if (uploadData) {
+                        const { data: publicUrlData } = _supabase.storage.from('products').getPublicUrl(fileName);
+                        avatarUrl = publicUrlData.publicUrl;
+                    }
+                }
+
                 const { data: existing } = await _supabase.from('users').select('*').eq('phone', phone);
                 if (existing && existing.length > 0) {
                     alert('هذا الرقم مسجل بالفعل!');
+                    btn.disabled = false;
+                    btn.innerText = 'إنشاء حساب';
                     return;
                 }
+
                 const { error } = await _supabase.from('users').insert([{ phone, password }]);
-                if (error) {
-                    alert('حدث خطأ أثناء إنشاء الحساب.');
-                } else {
+                if (!error) {
                     localStorage.setItem('user_phone', phone);
+                    if (avatarUrl) localStorage.setItem('user_avatar', avatarUrl);
+                    alert('تم إنشاء الحساب وتسجيل الدخول بنجاح! 🎉');
                     checkAuth();
+                } else {
+                    alert('حدث خطأ أثناء الإنشاء.');
                 }
+                btn.disabled = false;
+                btn.innerText = 'إنشاء حساب';
             } else {
+                btn.disabled = true;
+                btn.innerText = 'جاري التأكد...';
                 const { data } = await _supabase.from('users').select('*').eq('phone', phone).eq('password', password);
                 if (data && data.length > 0) {
                     localStorage.setItem('user_phone', phone);
+                    alert('تم تسجيل الدخول بنجاح! أهلاً بك 🎉');
                     checkAuth();
                 } else {
                     alert('رقم الهاتف أو كلمة المرور غير صحيحة.');
                 }
+                btn.disabled = false;
+                btn.innerText = 'دخول';
             }
         });
 
@@ -177,6 +228,7 @@
 
         function logout() {
             localStorage.removeItem('user_phone');
+            localStorage.removeItem('user_avatar');
             checkAuth();
         }
 
