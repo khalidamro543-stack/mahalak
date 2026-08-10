@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محلك - تسجيل الدخول</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-card { background: #fff; border-radius: 18px; padding: 25px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .logo-title { font-size: 26px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
+        .input-field { width: 100%; padding: 12px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; margin-bottom: 12px; }
+        .submit-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-title">محلك 🛍️</div>
+        <p style="color: #666; font-size: 13px; margin-bottom: 20px;">سجل دخولك لمتابعة عروضك</p>
+
+        <input type="tel" id="user-phone" class="input-field" placeholder="رقم الهاتف">
+        <input type="password" id="user-pass" class="input-field" placeholder="كلمة المرور">
+
+        <button class="submit-btn" onclick="handleLogin()">دخول</button>
+        <br><br>
+        <a href="index.html" style="color: var(--secondary); text-decoration: none; font-size: 12px;">العودة للرئيسية</a>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const phone = document.getElementById('user-phone').value;
+            if (phone) {
+                localStorage.setItem('user_phone', phone);
+                alert('تم تسجيل الدخول بنجاح!');
+                window.location.href = 'index.html';
+            } else {
+                alert('الرجاء إدخال رقم الهاتف');
+            }
+        }
+    </script>
+</body>
+</html>
