@@ -3,43 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محلك - تسجيل الدخول</title>
+    <title>تسجيل الدخول - محلك</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .login-card { background: #fff; border-radius: 18px; padding: 25px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        body { background-color: var(--bg-color); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .card { background: #fff; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
         .logo-title { font-size: 26px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
-        .input-field { width: 100%; padding: 12px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; margin-bottom: 12px; }
-        .submit-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; width: 100%; cursor: pointer; }
+        .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
+        .input-group { margin-bottom: 12px; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .toggle-btn { margin-top: 15px; background: none; border: none; color: var(--secondary); font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        .home-link { display: block; margin-top: 15px; color: var(--secondary); font-size: 12px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
+    <div class="card">
         <div class="logo-title">محلك 🛍️</div>
-        <p style="color: #666; font-size: 13px; margin-bottom: 20px;">سجل دخولك لمتابعة عروضك</p>
+        <div class="subtitle" id="form-subtitle">سجل دخولك لمتابعة عروضك</div>
 
-        <input type="tel" id="user-phone" class="input-field" placeholder="رقم الهاتف">
-        <input type="password" id="user-pass" class="input-field" placeholder="كلمة المرور">
+        <form id="auth-form">
+            <div class="input-group">
+                <input type="text" id="phone" required placeholder="رقم الهاتف (مثال: 249912345678)">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" required placeholder="كلمة المرور">
+            </div>
+            <button type="submit" class="btn" id="submit-btn">دخول</button>
+        </form>
 
-        <button class="submit-btn" onclick="handleLogin()">دخول</button>
-        <br><br>
-        <a href="index.html" style="color: var(--secondary); text-decoration: none; font-size: 12px;">العودة للرئيسية</a>
+        <button class="toggle-btn" onclick="toggleMode()" id="toggle-btn">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
+        <a href="index.html" class="home-link">العودة للرئيسية</a>
     </div>
 
     <script>
-        function handleLogin() {
-            const phone = document.getElementById('user-phone').value;
-            if (phone) {
-                localStorage.setItem('user_phone', phone);
-                alert('تم تسجيل الدخول بنجاح!');
-                window.location.href = 'index.html';
-            } else {
-                alert('الرجاء إدخال رقم الهاتف');
-            }
+        const SUPABASE_URL = 'https://iagvkchymgvewvivxilv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_l2lB13ZRtO41IUXZMBWVmw_tSwstU74';
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let isSignUp = false;
+
+        function toggleMode() {
+            isSignUp = !isSignUp;
+            document.getElementById('form-subtitle').innerText = isSignUp ? 'أنشئ حسابك الجديد في ثوانٍ' : 'سجل دخولك لمتابعة عروضك';
+            document.getElementById('submit-btn').innerText = isSignUp ? 'إنشاء حساب' : 'دخول';
+            document.getElementById('toggle-btn').innerText = isSignUp ? 'لديك حساب بالفعل؟ سجل الدخول' : 'ليس لديك حساب؟ أنشئ حساباً جديداً';
         }
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (isSignUp) {
+                // إنشاء حساب
+                const { data: existing } = await _supabase.from('users').select('*').eq('phone', phone);
+                if (existing && existing.length > 0) {
+                    alert('هذا الرقم مسجل بالفعل!');
+                    return;
+                }
+
+                const { error } = await _supabase.from('users').insert([{ phone, password }]);
+                if (error) {
+                    alert('حدث خطأ أثناء إنشاء الحساب.');
+                } else {
+                    localStorage.setItem('user_phone', phone);
+                    alert('تم إنشاء الحساب وتسجيل الدخول بنجاح! 🎉');
+                    window.location.href = 'index.html';
+                }
+            } else {
+                // تسجيل الدخول
+                const { data, error } = await _supabase.from('users').select('*').eq('phone', phone).eq('password', password);
+                if (data && data.length > 0) {
+                    localStorage.setItem('user_phone', phone);
+                    alert('أهلاً بك! تم تسجيل الدخول بنجاح.');
+                    window.location.href = 'index.html';
+                } else {
+                    alert('رقم الهاتف أو كلمة المرور غير صحيحة.');
+                }
+            }
+        });
     </script>
 </body>
 </html>
