@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محلك - نزّل عرضك</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --primary: #0F2C59; --secondary: #D86438; --bg-color: #EBF1F5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); padding: 15px; }
+        .form-card { background: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .input-field, .textarea-field { width: 100%; padding: 12px; border: 1px solid #DCE4EC; border-radius: 10px; font-size: 13px; outline: none; }
+        .submit-btn { background: var(--secondary); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h3 style="color: var(--primary); text-align: center;">نزّل عرضك الجديد 🛍️</h3>
+        
+        <input type="text" id="title" class="input-field" placeholder="اسم المنتج أو المحل *" required>
+        <input type="number" id="price" class="input-field" placeholder="السعر بالجنيه السوداني">
+        <textarea id="description" class="textarea-field" placeholder="تفاصيل ومواصفات العرض..."></textarea>
+        <input type="tel" id="phone" class="input-field" placeholder="رقم الواتساب للتواصل (مثال: 249912345678) *" required>
+        <input type="text" id="image_url" class="input-field" placeholder="رابط صورة المنتج (اختياري)">
+
+        <button class="submit-btn" onclick="saveProduct()">انشر العرض هسي 🚀</button>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://iagvkchymgvewvivxilv.supabase.co';
+        const SUPABASE_KEY = 'ضع_المفتاح_هنا';
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function saveProduct() {
+            const title = document.getElementById('title').value;
+            const price = document.getElementById('price').value;
+            const description = document.getElementById('description').value;
+            const phone = document.getElementById('phone').value;
+            const image_url = document.getElementById('image_url').value;
+
+            if (!title || !phone) {
+                alert('الرجاء إدخال اسم العرض ورقم الواتساب!');
+                return;
+            }
+
+            const { error } = await _supabase.from('products').insert([
+                { title, price, description, phone, image_url }
+            ]);
+
+            if (error) {
+                alert('حدث خطأ أثناء النشر، حاول مرة أخرى.');
+            } else {
+                alert('تم نشر عرضك بنجاح! سيظهر فوراً في الصفحة الرئيسية.');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
